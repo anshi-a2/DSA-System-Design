@@ -150,6 +150,196 @@ Bloom filter: https://en.wikipedia.org/wiki/Bloom_filter
 
 URLShortner using zookeeper : https://www.youtube.com/watch?v=JQDHz72OA3c (BONUS thing)
 
+Actual end to end JAVA Code :
+
+## Project Structure 
+
+```css
+url-shortener/
+├── src/main/java/com/example/urlshortener/
+│   ├── UrlShortenerApplication.java
+│   ├── controller/UrlController.java
+│   ├── model/UrlMapping.java
+│   ├── repository/UrlRepository.java
+│   └── service/UrlService.java
+└── src/main/resources/
+    └── application.properties
+
+```
 
 
+## UrlShortenerApplication.java
 
+```java
+package com.example.urlshortener;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class UrlShortenerApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(UrlShortenerApplication.class, args);
+    }
+}
+
+```
+
+## UrlMapping.java
+
+
+```java
+package com.example.urlshortener.model;
+
+import jakarta.persistence.*;
+import lombok.*;
+
+@Entity
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class UrlMapping {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false)
+    private String longUrl;
+
+    @Column(unique = true, nullable = false)
+    private String shortCode;
+}
+
+```
+
+
+## UrlRepository.java
+
+```java
+package com.example.urlshortener.repository;
+
+import com.example.urlshortener.model.UrlMapping;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.Optional;
+
+public interface UrlRepository extends JpaRepository<UrlMapping, Long> {
+    Optional<UrlMapping> findByShortCode(String shortCode);
+    Optional<UrlMapping> findByLongUrl(String longUrl);
+}
+
+```
+
+## UrlService.java
+
+```java
+package com.example.urlshortener.service;
+
+import com.example.urlshortener.model.UrlMapping;
+import com.example.urlshortener.repository.UrlRepository;
+import org.springframework.stereotype.Service;
+
+import java.util.Optional;
+import java.util.Random;
+
+@Service
+public class UrlService {
+
+    private final UrlRepository repository;
+    private static final String ALPHABET = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    private static final int SHORT_CODE_LENGTH = 6;
+
+    public UrlService(UrlRepository repository) {
+        this.repository = repository;
+    }
+
+    public String shortenUrl(String longUrl) {
+        // Check if already shortened
+        Optional<UrlMapping> existing = repository.findByLongUrl(longUrl);
+        if (existing.isPresent()) {
+            return existing.get().getShortCode();
+        }
+
+        // Generate unique short code
+        String shortCode;
+        do {
+            shortCode = generateShortCode();
+        } while (repository.findByShortCode(shortCode).isPresent());
+
+        UrlMapping mapping = UrlMapping.builder()
+                .longUrl(longUrl)
+                .shortCode(shortCode)
+                .build();
+
+        repository.save(mapping);
+        return shortCode;
+    }
+
+    public Optional<String> getLongUrl(String shortCode) {
+        return repository.findByShortCode(shortCode)
+                .map(UrlMapping::getLongUrl);
+    }
+
+    private String generateShortCode() {
+        Random random = new Random();
+        StringBuilder sb = new StringBuilder(SHORT_CODE_LENGTH);
+        for (int i = 0; i < SHORT_CODE_LENGTH; i++) {
+            sb.append(ALPHABET.charAt(random.nextInt(ALPHABET.length())));
+        }
+        return sb.toString();
+    }
+}
+
+```
+
+
+## UrlController.java
+
+```java
+package com.example.urlshortener.controller;
+
+import com.example.urlshortener.service.UrlService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
+
+@Controller
+public class UrlController {
+
+    private final UrlService service;
+
+    public UrlController(UrlService service) {
+        this.service = service;
+    }
+
+    @PostMapping("/shorten")
+    @ResponseBody
+    public ResponseEntity<?> shorten(@RequestBody String longUrl) {
+        String code = service.shortenUrl(longUrl);
+        return ResponseEntity.ok("http://localhost:8080/" + code);
+    }
+
+    @GetMapping("/{code}")
+    public ResponseEntity<?> redirect(@PathVariable String code) {
+        return service.getLongUrl(code)
+                .map(url -> ResponseEntity.status(302).header("Location", url).build())
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+}
+
+```
+
+## application.properties
+
+```java
+spring.datasource.url=jdbc:h2:mem:urlshortenerdb
+spring.datasource.driverClassName=org.h2.Driver
+spring.datasource.username=sa
+spring.datasource.password=
+spring.h2.console.enabled=true
+spring.jpa.hibernate.ddl-auto=create
+spring.jpa.show-sql=true
+
+```
