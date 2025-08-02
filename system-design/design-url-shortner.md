@@ -148,6 +148,7 @@ A RESTful Tutorial: https://www.restapitutorial.com/index.html
 
 Bloom filter: https://en.wikipedia.org/wiki/Bloom_filter
 
+URLShortner using zookeeper : https://www.youtube.com/watch?v=JQDHz72OA3c (BONUS thing)
 
 
 
