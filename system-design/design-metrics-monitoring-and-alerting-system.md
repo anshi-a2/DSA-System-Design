@@ -196,9 +196,7 @@ Visualization is built on top of the data layer. Metrics can be shown on dashboa
 
 ---
 
-# Low Level Design 
-
-## Monitoring and Alerting Architecture
+#  Monitoring and Alerting Architecture
 
 ### 1. Codebase / Application
 
@@ -273,6 +271,8 @@ Grafana can send to its own notification channels (Slack, Teams, etc.)
 
 In production setups: Prometheus + Alertmanager is usually the alerting engine; Grafana is primarily visualization (with optional alerts)
 
+ ```mathematica
+
    ┌────────────────────┐
    │ Application Code   │
    │ (metrics via /metrics) 
@@ -307,6 +307,7 @@ In production setups: Prometheus + Alertmanager is usually the alerting engine; 
    └────────────────────┘
 
 
+```
 
 
 
