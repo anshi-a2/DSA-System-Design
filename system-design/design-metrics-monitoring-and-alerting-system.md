@@ -194,6 +194,125 @@ A monitoring system allows administrators to define situations to be actively ma
 Visualization is built on top of the data layer. Metrics can be shown on dashboards over various time scales and alerts can be displayed as well. Building a high-quality visualization system is challenging; there is a strong argument for using an off-the-shelf system.  
 **Example:** Grafana can be used for this purpose.
 
+---
+
+# Low Level Design 
+
+## Monitoring and Alerting Architecture
+
+### 1. Codebase / Application
+
+- Exposes metrics via client libraries → `/metrics` endpoint.
+
+**Example metric:**
+
+`http_requests_total{service="auth", status="500"} 42`
+
+---
+
+## 2. Prometheus
+
+- Scrapes metrics from the app.
+- Stores them in TSDB.
+- PromQL queries can be used both for:
+  - Dashboards (Grafana)
+  - Alert evaluation (Alertmanager integration)
+
+---
+
+## 3. Alerting in Prometheus
+
+You define alerting rules in Prometheus config.
+
+**Example:**
+
+```yaml
+groups:
+  - name: service-rules
+    rules:
+      - alert: HighErrorRate
+        expr: rate(http_requests_total{service="auth",status=~"5.."}[5m]) 
+              / rate(http_requests_total{service="auth"}[5m]) > 0.05
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Auth service has >5% error rate"
+
+```
+
+Prometheus evaluates these rules periodically (every 15s by default).
+
+If a rule triggers → Prometheus sends alert events to Alertmanager.
+
+## 4. Alertmanager
+
+Responsibilities:
+
+Deduplication (avoid duplicate alerts)
+
+Grouping (batch alerts, e.g., by service/region)
+
+Routing (decide who gets notified)
+
+Silencing & inhibition (prevent alert storms, suppress less important alerts)
+
+Notifications sent to external channels:
+
+Slack, PagerDuty, Email, SMS, Webhooks
+
+## 5. Grafana
+
+Queries Prometheus for visualization (PromQL)
+
+Can also define alerts inside Grafana panels:
+
+Grafana → Prometheus query → compare against threshold → fire alert
+
+Grafana can send to its own notification channels (Slack, Teams, etc.)
+
+In production setups: Prometheus + Alertmanager is usually the alerting engine; Grafana is primarily visualization (with optional alerts)
+
+   ┌────────────────────┐
+   │ Application Code   │
+   │ (metrics via /metrics) 
+   └─────────┬──────────┘
+             │
+             ▼
+   ┌────────────────────┐
+   │ Prometheus Server  │
+   │ - Scrapes metrics  │
+   │ - Stores TSDB      │
+   │ - Evaluates rules  │
+   └─────────┬──────────┘
+             │ (PromQL API)
+   ┌─────────▼──────────┐
+   │      Grafana       │
+   │ - Dashboards       │
+   │ - Visualizations   │
+   │ - Optional alerts  │
+   └────────────────────┘
+             │ (Alert rules firing)
+             ▼
+   ┌────────────────────┐
+   │   Alertmanager     │
+   │ - Dedup / Grouping │
+   │ - Routing          │
+   │ - Notifications    │
+   └─────────┬──────────┘
+             │
+   ┌─────────▼──────────┐
+   │ Slack / PagerDuty  │
+   │ Email / SMS / Web  │
+   └────────────────────┘
+
+
+
+
+
+
+
+---
 
 # Wrap Up
 
