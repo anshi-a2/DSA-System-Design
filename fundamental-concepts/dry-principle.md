@@ -118,7 +118,7 @@ class LoginService {
 
 Extract duplicate validation logic:
 
-```   
+```java   
 class EmailValidator {
       public static boolean isValid(String email) {
           return email != null && email.matches("^[^@]+@[^@]+\\.[^@]+$");
@@ -128,7 +128,7 @@ class EmailValidator {
 
 Now use this in all flows:
 
-```   
+```java   
 class LoginService {
       public boolean login(String email, String password) {
           if (!EmailValidator.isValid(email)) return false;
