@@ -25,7 +25,9 @@ The design is extensible, testable, and production-ready.
 We define a simple interface:
 
 ```java
-public interface Authenticator {      boolean authenticate(String userId, String secret);  }
+public interface Authenticator {
+      boolean authenticate(String userId, String secret);
+  }
 ```
 
 Clients only know **what** the system does, not **how** authentication works internally.
@@ -100,7 +102,11 @@ New login methods can be added **without changing any existing code**.
 
 Add a class:
 
-Plain textANTLR4BashCC#CSSCoffeeScriptCMakeDartDjangoDockerEJSErlangGitGoGraphQLGroovyHTMLJavaJavaScriptJSONJSXKotlinLaTeXLessLuaMakefileMarkdownMATLABMarkupObjective-CPerlPHPPowerShell.propertiesProtocol BuffersPythonRRubySass (Sass)Sass (Scss)SchemeSQLShellSwiftSVGTSXTypeScriptWebAssemblyYAMLXML`   public class AppleAuthenticator implements Authenticator { ... }   `
+```java
+public class AppleAuthenticator implements Authenticator {
+    ...
+ }
+```
 
 No change in LoginService.
 
@@ -111,7 +117,10 @@ All authenticators must be interchangeable.
 
 Authenticator interface guarantees a consistent behavior:
 
-Plain textANTLR4BashCC#CSSCoffeeScriptCMakeDartDjangoDockerEJSErlangGitGoGraphQLGroovyHTMLJavaJavaScriptJSONJSXKotlinLaTeXLessLuaMakefileMarkdownMATLABMarkupObjective-CPerlPHPPowerShell.propertiesProtocol BuffersPythonRRubySass (Sass)Sass (Scss)SchemeSQLShellSwiftSVGTSXTypeScriptWebAssemblyYAMLXML`   Authenticator a = new PasswordAuthenticator();  Authenticator b = new GoogleOAuthAuthenticator();   `
+```java
+Authenticator a = new PasswordAuthenticator();
+Authenticator b = new GoogleOAuthAuthenticator();
+```
 
 Both work seamlessly with the same code.
 
@@ -120,7 +129,9 @@ Both work seamlessly with the same code.
 
 The interface has only **one responsibility**:
 
-Plain textANTLR4BashCC#CSSCoffeeScriptCMakeDartDjangoDockerEJSErlangGitGoGraphQLGroovyHTMLJavaJavaScriptJSONJSXKotlinLaTeXLessLuaMakefileMarkdownMATLABMarkupObjective-CPerlPHPPowerShell.propertiesProtocol BuffersPythonRRubySass (Sass)Sass (Scss)SchemeSQLShellSwiftSVGTSXTypeScriptWebAssemblyYAMLXML`   boolean authenticate(String userId, String secret);   `
+```java
+boolean authenticate(String userId, String secret);
+```
 
 We don’t force classes to implement unused methods.
 
@@ -129,7 +140,9 @@ We don’t force classes to implement unused methods.
 
 High-level modules depend on interfaces, not implementation.
 
-Plain textANTLR4BashCC#CSSCoffeeScriptCMakeDartDjangoDockerEJSErlangGitGoGraphQLGroovyHTMLJavaJavaScriptJSONJSXKotlinLaTeXLessLuaMakefileMarkdownMATLABMarkupObjective-CPerlPHPPowerShell.propertiesProtocol BuffersPythonRRubySass (Sass)Sass (Scss)SchemeSQLShellSwiftSVGTSXTypeScriptWebAssemblyYAMLXML`   Authenticator auth = AuthenticatorFactory.getAuthMethod(method);   `
+```java
+Authenticator auth = AuthenticatorFactory.getAuthMethod(method);
+```
 
 LoginService depends on the abstraction (Authenticator).
 
@@ -139,24 +152,76 @@ LoginService depends on the abstraction (Authenticator).
 **Authenticator Interface**
 ---------------------------
 
-Plain textANTLR4BashCC#CSSCoffeeScriptCMakeDartDjangoDockerEJSErlangGitGoGraphQLGroovyHTMLJavaJavaScriptJSONJSXKotlinLaTeXLessLuaMakefileMarkdownMATLABMarkupObjective-CPerlPHPPowerShell.propertiesProtocol BuffersPythonRRubySass (Sass)Sass (Scss)SchemeSQLShellSwiftSVGTSXTypeScriptWebAssemblyYAMLXML`   public interface Authenticator {      boolean authenticate(String userId, String secret);  }   `
+```java
+public interface Authenticator {
+      boolean authenticate(String userId, String secret);
+  }
+```
 
 **Concrete Authenticators**
 ---------------------------
 
-Plain textANTLR4BashCC#CSSCoffeeScriptCMakeDartDjangoDockerEJSErlangGitGoGraphQLGroovyHTMLJavaJavaScriptJSONJSXKotlinLaTeXLessLuaMakefileMarkdownMATLABMarkupObjective-CPerlPHPPowerShell.propertiesProtocol BuffersPythonRRubySass (Sass)Sass (Scss)SchemeSQLShellSwiftSVGTSXTypeScriptWebAssemblyYAMLXML`   public class PasswordAuthenticator implements Authenticator {      public boolean authenticate(String userId, String password) {          // verify hashed password          return true;      }  }  public class OTPAuthenticator implements Authenticator {      public boolean authenticate(String userId, String otp) {          // verify OTP          return true;      }  }  public class GoogleOAuthAuthenticator implements Authenticator {      public boolean authenticate(String userId, String token) {          // validate Google OAuth token          return true;      }  }   `
+```java
+public class PasswordAuthenticator implements Authenticator {
+      public boolean authenticate(String userId, String password) {
+          // verify hashed password
+          return true;
+      }
+  }
+  public class OTPAuthenticator implements Authenticator {
+      public boolean authenticate(String userId, String otp) {
+          // verify OTP
+          return true;
+      }
+  }
+  public class GoogleOAuthAuthenticator implements Authenticator {
+      public boolean authenticate(String userId, String token) {
+          // validate Google OAuth token
+          return true;
+      }
+  }
+```
 
 **Factory Pattern (OCP + DIP)**
 -------------------------------
 
-Plain textANTLR4BashCC#CSSCoffeeScriptCMakeDartDjangoDockerEJSErlangGitGoGraphQLGroovyHTMLJavaJavaScriptJSONJSXKotlinLaTeXLessLuaMakefileMarkdownMATLABMarkupObjective-CPerlPHPPowerShell.propertiesProtocol BuffersPythonRRubySass (Sass)Sass (Scss)SchemeSQLShellSwiftSVGTSXTypeScriptWebAssemblyYAMLXML`   public class AuthenticatorFactory {      public static Authenticator getAuthMethod(String type) {          return switch (type) {              case "PASSWORD" -> new PasswordAuthenticator();              case "OTP" -> new OTPAuthenticator();              case "GOOGLE" -> new GoogleOAuthAuthenticator();              default -> throw new IllegalArgumentException("Invalid type");          };      }  }   `
+```java   
+public class AuthenticatorFactory {
+      public static Authenticator getAuthMethod(String type) {
+          return switch (type) {
+              case "PASSWORD" -> new PasswordAuthenticator();
+              case "OTP" -> new OTPAuthenticator();
+              case "GOOGLE" -> new GoogleOAuthAuthenticator();
+              default -> throw new IllegalArgumentException("Invalid type");
+          };
+      }
+  }
+```
 
 **Login Service**
 -----------------
 
-Plain textANTLR4BashCC#CSSCoffeeScriptCMakeDartDjangoDockerEJSErlangGitGoGraphQLGroovyHTMLJavaJavaScriptJSONJSXKotlinLaTeXLessLuaMakefileMarkdownMATLABMarkupObjective-CPerlPHPPowerShell.propertiesProtocol BuffersPythonRRubySass (Sass)Sass (Scss)SchemeSQLShellSwiftSVGTSXTypeScriptWebAssemblyYAMLXML`   public class LoginService {      private final UserAttemptTracker tracker = new UserAttemptTracker();      private final NotificationService notifier = new NotificationService();      public boolean login(String method, String userId, String secret) {          Authenticator auth = AuthenticatorFactory.getAuthMethod(method);          boolean success = auth.authenticate(userId, secret);          tracker.track(userId, success);          if (success) {              generateJWT(userId);          } else if (tracker.exceededLimit(userId)) {              notifier.sendAlert(userId);          }          return success;      }      private void generateJWT(String userId) {          // generate JWT logic      }  }   `
+```java   
+public class LoginService {
+      private final UserAttemptTracker tracker = new UserAttemptTracker();
+      private final NotificationService notifier = new NotificationService();
+      public boolean login(String method, String userId, String secret) {
+          Authenticator auth = AuthenticatorFactory.getAuthMethod(method);
+          boolean success = auth.authenticate(userId, secret);
+          tracker.track(userId, success);
+          if (success) {
+              generateJWT(userId);
+          } else if (tracker.exceededLimit(userId)) {
+              notifier.sendAlert(userId);
+          }          return success;
+      }
+      private void generateJWT(String userId) {
+          // generate JWT logic
+      }
+  }
+```
 
-🎤 **Interview Summary (Copy-Paste)**
+🎤 ** Summary **
 =====================================
 
 > I designed a login module using OOPS + SOLID. Each login method implements a common Authenticator interface and follows SRP. The LoginService depends on this interface, not implementations, satisfying DIP. New login methods like Apple or GitHub OAuth can be added without modifying existing code, ensuring OCP. The interface exposes only required methods (ISP), and all authenticators can substitute each other without breaking functionality, following LSP.
