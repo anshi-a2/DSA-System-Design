@@ -147,6 +147,29 @@ public enum LoginService {
 
 **Pros:** Thread-safe, prevents reflection attacks, auto handles serialization**Cons:** Cannot inherit classes
 
+UML DAIGRAM (LOGIN SERVICE) :
+-----------------------
+
+                    ┌────────────────────────────┐
+                    │       LoginService         │  <<Singleton>>
+                    ├────────────────────────────┤
+                    │ - instance: LoginService   │  <<static>>
+                    │ - LoginService()           │  <<private>>
+                    ├────────────────────────────┤
+                    │ + getInstance(): LoginService │
+                    │ + login(username, password)  │
+                    └──────────────▲─────────────┘
+                                   │
+                                   │ single global instance
+                                   ▼
+                        ┌─────────────────────────┐
+                        │       Client Code       │
+                        ├─────────────────────────┤
+                        │ loginService = LoginService.getInstance() │
+                        │ loginService.login("anshi", "pwd")        │
+                        └─────────────────────────┘
+
+
 Advantages of Singleton
 -----------------------
 
@@ -285,6 +308,7 @@ Examples:
 *   Global sound manager
     
 *   Level/world controller
+
     
 
 ### 🔥 Summary You Can Use in Interviews
