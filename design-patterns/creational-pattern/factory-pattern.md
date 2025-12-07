@@ -88,6 +88,7 @@ public class Main {
 
 Now if tomorrow we add LinkedInLoginService, only factory needs update — **client code doesn’t change**.🔹 UML Class Diagram — Factory Method for Login Service
 
+```pgsql
                 ┌────────────────────────┐
                 │      LoginService      │  <<interface>>
                 ├────────────────────────┤
@@ -129,6 +130,10 @@ Client Code
 │ EmailLoginService /        │
 │ GoogleLoginService         │
 └────────────────────────────┘
+
+```
+
+
 
 
 
