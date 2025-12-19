@@ -247,12 +247,7 @@ Notice:
 *   Debugging shared state can be tricky
     
 
-9\. **Flyweight vs Related Patterns (Common Confusion)**
-========================================================
-
-PatternKey Difference**Flyweight**Shares objects to save memory**Singleton**Single global instance**Prototype**Clones objects**Factory**Creates new objects
-
-10\. **30-Second Interview Summary**
+9\. **30-Second Interview Summary**
 ====================================
 
 > Flyweight Pattern reduces memory usage by sharing common, immutable state across many objects. It separates intrinsic and extrinsic state and uses a factory to manage object reuse. Commonly used in JVM, UI rendering, games, and authorization systems.
