@@ -20,48 +20,56 @@ Output: [2,0,1]
 
 /**
  * Definition for singly-linked list.
- * public class ListNode {
+ * struct ListNode {
  *     int val;
- *     ListNode next;
- *     ListNode() {}
- *     ListNode(int val) { this.val = val; }
- *     ListNode(int val, ListNode next) { this.val = val; this.next = next; }
- * }
+ *     ListNode *next;
+ *     ListNode() : val(0), next(nullptr) {}
+ *     ListNode(int x) : val(x), next(nullptr) {}
+ *     ListNode(int x, ListNode *next) : val(x), next(next) {}
+ * };
  */
 class Solution {
-    public ListNode rotateRight(ListNode head, int k) {
-        if(head == null || head.next == null) return head;
-        
-        // Step 1: Find the length of the linked list
-        ListNode temp = head;
-        int length = 0;
-        while(temp != null) {
-            length++;
-            temp = temp.next;
-        }
-        
-        // Step 2: Calculate the effective rotation using modulo
-        int rotation = k % length;
+public:
+    ListNode* rotateRight(ListNode* head, int k) {
 
-        // Step 3: Perform the rotation for 'rotation' times
-        for(int i = 0; i < rotation; i++) {
-            ListNode last = head, prev = null;
-            
-            // Step 4: Traverse the list to find the last node
-            while(last.next != null) {
-                prev = last;
-                last = last.next;
-            }
-            
-            // Step 5: Perform the rotation by adjusting pointers
-            last.next = head;
-            prev.next = null;
-            head = last;
+        // If list is empty, no rotation needed
+        if (!head) return head;
+
+        int l = 1;                     // Length of the linked list
+        ListNode* dummy = head;        // Pointer to traverse the list
+
+        // Find length of the list and reach the last node
+        while (dummy->next) {
+            l += 1;
+            dummy = dummy->next;
         }
-        
-        return head;
+
+        // Reduce k to avoid unnecessary rotations
+        k = k % l;
+
+        // If k is 0, list remains unchanged
+        if (k == 0) return head;
+
+        ListNode* curr = head;
+
+        /*
+         * Move curr to the (l - k - 1)th node
+         * This node will become the new tail after rotation
+         */
+        for (int i = 0; i < l - k - 1; i++) {
+            curr = curr->next;
+        }
+
+        // New head will be the next node
+        ListNode* newHead = curr->next;
+
+        // Break the list
+        curr->next = NULL;
+
+        // Connect last node to the old head
+        dummy->next = head;
+
+        // Return new head
+        return newHead;
     }
-}
-
-
-
+};
