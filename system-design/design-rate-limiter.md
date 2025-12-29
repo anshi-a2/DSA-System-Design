@@ -517,6 +517,29 @@ Avoid being rate limited. Design your client with best practices:
   - Include code to catch exceptions or errors so your client can gracefully recover fromexceptions.
   - Add sufficient back off time to retry logic.
 
+### Quick Recap before interview :
+
+- Implement at API Gateway
+- Distributed system
+- Support per-user, per-IP, per-API
+- Algorithm: Token Bucket
+- Allows burst traffic
+- Redis as shared state
+- Redis sharded
+- Key format: rl:{api}:{user|ip}
+- Store: tokens, last_refill_ts
+- Use Redis Lua for atomicity
+- Avoid race conditions
+ - Use TTL to clean inactive buckets
+- Dynamic limits via config store
+- No redeploy needed
+- Low latency > perfect accuracy
+- Local in-memory limiter as fallback
+- Approximate consistency acceptable
+- Fail-open for critical APIs
+- Fail-close for abuse-prone APIs
+- Return 429 on limit exceed
+
 
 ### References
 
