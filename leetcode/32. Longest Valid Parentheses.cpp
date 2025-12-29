@@ -47,4 +47,8 @@ public:
         return ans;       
     }
 };
+
+// short summary of what we did above :
+// We use a stack to track invalid positions.
+// When we find a valid closing bracket, we calculate the length using the distance from the last invalid position
   
