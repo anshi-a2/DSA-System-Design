@@ -187,6 +187,20 @@ public class Main {
 
 ```
 
+### 📌 Ultra-Short Revision (Last Minute)
+
+Distributed ID generation
+
+Snowflake (timestamp + node + seq)
+
+No central DB
+
+Horizontally scalable
+
+Clock skew handling
+
+64-bit IDs
+
 ### References 
 
 Universally unique identifier: https://en.wikipedia.org/wiki/Universally_unique_identifier
