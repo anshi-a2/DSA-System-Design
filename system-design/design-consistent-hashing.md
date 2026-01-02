@@ -174,5 +174,34 @@ int main() {
 ```
 
 
+### 🔗 Consistent Hashing — Ultra-Crisp Interview Pointers
+
+Hash space as ring
+
+Hash nodes + keys on same ring
+
+Key → next clockwise node
+
+Add/remove node → only ~1/N keys move
+
+Solves modulo rehashing problem
+
+Use Virtual Nodes for load balance
+
+One server → many vnodes
+
+Replication → next K nodes
+
+Handles node failure gracefully
+
+Used in Dynamo, Cassandra, Redis, LB
+
+Hash fn → uniform (Murmur/SHA-1)
+
+Scales horizontally
+
+Tradeoff → more metadata
+
+
 
 
