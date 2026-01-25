@@ -55,5 +55,44 @@ public:
 };
 
 
+// SOLUTION 02 : Recursive (Reverse Postorder)
+
+class Solution {
+    TreeNode* prev = nullptr;
+
+public:
+    void flatten(TreeNode* root) {
+        if (!root) return;
+
+        flatten(root->right);
+        flatten(root->left);
+
+        root->right = prev;
+        root->left = nullptr;
+        prev = root;
+    }
+};
+
+
+// What does “Reverse Postorder” mean here?
+// Normal traversals:
+// Preorder: root → left → right
+// Postorder: left → right → root
+// 👉 Reverse postorder used here:
+// right → left → root
+
+
+// Core Idea (Very Important)
+
+// We maintain a pointer:
+// TreeNode* prev = nullptr;
+// Think of prev as:
+// “the node that should come after the current node in the flattened list”
+// So when we process a node:
+// Its right should point to prev
+// Its left must be NULL
+// Then we update prev = current node
+
+
 
 
